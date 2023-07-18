@@ -1,23 +1,22 @@
 import Prelude as P
-import Data.Set as S
 import Data.IntMap.Strict as M
 
 
-data Node = Node { id :: Int, neighbors :: S.Set Int }
+data Node = Node { id :: Int, neighbors :: [Int], nextIndex :: Int }
 type Graph = M.IntMap Node
 type GraphError = String
 
 instance Show Node where
-    show (Node a neighbors) = "Node " ++ show a ++ " " ++ show (S.toList neighbors)
+    show (Node a neighbors nextI) = "Node " ++ show a ++ " " ++ show neighbors ++ " nextI: " ++ show nextI
 
  
 
-makeNode :: Graph -> Int -> Either GraphError Graph
-makeNode g i = 
-    let n = Node i empty
-    in case M.lookup i g of
-        Nothing -> Right (M.insert i n g)
-        Just _  -> Left (show n ++ " already in graph")
+-- makeNode :: Graph -> Int -> Either GraphError Graph
+-- makeNode g i = 
+--     let n = Node i empty 0
+--     in case M.lookup i g of
+--         Nothing -> Right (M.insert i n g)
+--         Just _  -> Left (show n ++ " already in graph")
 
 
 strToInt :: String -> Int
@@ -37,15 +36,19 @@ formatGraphFile s =
 
 connect :: Graph -> Int -> Int -> Graph
 connect g i1 i2 = 
-    let neighbors1 = case M.lookup i1 g of 
-                        Nothing -> S.empty
-                        Just (Node _ neighbors) -> neighbors
-        neighbors2 = case M.lookup i2 g of
-                        Nothing -> S.empty
-                        Just (Node _ neighbors)  -> neighbors
-        n1 = Node i1 (S.insert i2 neighbors1)
-        n2 = Node i2 (S.insert i1 neighbors2)
+    let (neighbors1, nextIndex1) = aux1 i1 g
+        (neighbors2, nextIndex2) = aux1 i2 g
+        neighbors1' = aux2 i2 neighbors1
+        neighbors2' = aux2 i1 neighbors2
+        n1 = Node i1 neighbors1' nextIndex1
+        n2 = Node i2 neighbors2' nextIndex2
     in M.insert i1 n1 (M.insert i2 n2 g)
+    where aux1 i g = case M.lookup i g of
+                        Nothing -> ([], 0)
+                        Just (Node _ neighbors nextIndex) -> (neighbors, nextIndex)
+          aux2 i neighbors = if i `elem` neighbors
+                                then neighbors
+                                else i:neighbors
 
 
 buildGraph :: [(Int, Int)] -> Graph
