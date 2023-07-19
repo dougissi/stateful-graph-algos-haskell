@@ -2,21 +2,11 @@ import Prelude as P
 import Data.IntMap.Strict as M
 
 
-data Node = Node { id :: Int, neighbors :: [Int], nextIndex :: Int }
+data Node = Node { val :: Int, neighbors :: [Int], visited :: Bool }
 type Graph = M.IntMap Node
-type GraphError = String
 
 instance Show Node where
-    show (Node a neighbors nextI) = "Node " ++ show a ++ " " ++ show neighbors ++ " nextI: " ++ show nextI
-
- 
-
--- makeNode :: Graph -> Int -> Either GraphError Graph
--- makeNode g i = 
---     let n = Node i empty 0
---     in case M.lookup i g of
---         Nothing -> Right (M.insert i n g)
---         Just _  -> Left (show n ++ " already in graph")
+    show (Node a neighbors visited) = "Node " ++ show a ++ " " ++ show neighbors ++ " visited: " ++ show visited
 
 
 strToInt :: String -> Int
@@ -36,35 +26,50 @@ formatGraphFile s =
 
 connect :: Graph -> Int -> Int -> Graph
 connect g i1 i2 = 
-    let (neighbors1, nextIndex1) = aux1 i1 g
-        (neighbors2, nextIndex2) = aux1 i2 g
+    let (neighbors1, visited1) = aux1 i1 g
+        (neighbors2, visited2) = aux1 i2 g
         neighbors1' = aux2 i2 neighbors1
         neighbors2' = aux2 i1 neighbors2
-        n1 = Node i1 neighbors1' nextIndex1
-        n2 = Node i2 neighbors2' nextIndex2
+        n1 = Node i1 neighbors1' visited1
+        n2 = Node i2 neighbors2' visited2
     in M.insert i1 n1 (M.insert i2 n2 g)
     where aux1 i g = case M.lookup i g of
-                        Nothing -> ([], 0)
-                        Just (Node _ neighbors nextIndex) -> (neighbors, nextIndex)
+                        Nothing -> ([], False)
+                        Just (Node _ neighbors visited) -> (neighbors, visited)
           aux2 i neighbors = if i `elem` neighbors
                                 then neighbors
                                 else i:neighbors
 
 
 buildGraph :: [(Int, Int)] -> Graph
-buildGraph pairs = aux pairs M.empty
+buildGraph pairs = reverseNeighbors (aux pairs M.empty)
     where 
         aux [] g = g
         aux ((i1, i2):is) g = aux is (connect g i1 i2)
+        reverseNeighbors = M.map (\(Node x neighbors v) -> Node x (reverse neighbors) v)
 
 
--- traverseDFS :: Graph -> Int -> [Int]
--- traverseDFS g root = aux g root M.empty
---     where
---         aux g root visited = case M.lookup root visited of
---                                 Nothing
 
-    
+traverseDFS :: Graph -> Int -> [Int]
+traverseDFS g root = 
+    let (_, traversal) = dfs g root []
+    in traversal
+    where
+        dfs g root t = 
+            case M.lookup root g of
+                Nothing -> (g, t)
+                Just (Node _ neighbors _) -> 
+                    let g' = M.insert root (Node root neighbors True) g  -- consider root to be visited
+                        t' = t ++ [root]
+                    in loop g' root neighbors t'
+        loop g root [] t = (g, t)
+        loop g root (i:is) t =
+            let (Just next) = M.lookup i g
+            in if visited next
+                then loop g root is t
+                else let (g', t') = dfs g (val next) t
+                     in loop g' root is t'
+                                        
 main = do
     contents <- getContents
     let edges = formatGraphFile contents
@@ -73,6 +78,5 @@ main = do
 
 {-
 ToDo
-* default value in Node constructor
 * generalize show for more than just Integers
 -}
