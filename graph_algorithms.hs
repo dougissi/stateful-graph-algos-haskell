@@ -50,8 +50,8 @@ buildGraph pairs = reverseNeighbors (aux pairs M.empty)
 
 
 
-traverseDFS :: Graph -> Int -> [Int]
-traverseDFS g root = 
+traverseGraph :: Graph -> Int -> [Int]
+traverseGraph g root = 
     let (_, traversal) = dfs g root []
     in traversal
     where
