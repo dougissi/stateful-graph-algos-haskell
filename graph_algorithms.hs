@@ -6,7 +6,7 @@ data Node = Node { val :: Int, neighbors :: [Int], visited :: Bool }
 type Graph = M.IntMap Node
 
 instance Show Node where
-    show (Node a neighbors visited) = "Node " ++ show a ++ " " ++ show neighbors ++ " visited: " ++ show visited
+    show (Node a neighbors visited) = "Node " ++ show a ++ " " ++ show neighbors ++ " " ++ show visited
 
 
 strToInt :: String -> Int
@@ -69,6 +69,47 @@ traverseGraph g root =
                 then loop g root is t
                 else let (g', t') = dfs g (val next) t
                      in loop g' root is t'
+
+bfs :: Graph -> Int -> Int -> Int
+bfs g s e = 
+    case M.lookup s g of
+        Nothing -> -1  -- start not in graph
+        Just (Node _ neighbors visited) ->
+            case M.lookup e g of
+                Nothing -> -1  -- end not in graph
+                _       -> aux g e [(s, 0)]
+    where
+        aux _ _ [] = -1      -- queue empty; never reached end
+        aux g e ((n, d): q)  -- pop queue
+            | n == e    = d  -- done
+            | otherwise =
+                let (Just (Node _ neighbors visited)) = M.lookup n g
+                in if visited
+                    then aux g e q  -- already visited; don't add to queue
+                    else            -- not yet visited; add to queue
+                        let q' = q ++ [(i, d + 1) | i <- neighbors]
+                            g' = M.insert n (Node n neighbors True) g  -- consider current node visited
+                        in aux g' e q'
+
+
+shortestPathsFromStart :: Graph -> Int -> [(Int, Int)]
+shortestPathsFromStart g s = 
+    let ks = [x | x <- keys g, x /= s]
+    in reverse (aux g s ks [])
+    where
+        aux g s [] o     = o
+        aux g s (n:ns) o = aux g s ns ((n, bfs g s n) : o)
+
+
+shortestPaths :: Graph -> [(Int, [(Int, Int)])]
+shortestPaths g =
+    let ks = keys g
+    in reverse (aux g ks [])
+    where
+        aux g [] acc = acc
+        aux g (s:ns) acc = aux g ns ((s, shortestPathsFromStart g s):acc)
+
+
                                         
 main = do
     contents <- getContents
@@ -79,4 +120,5 @@ main = do
 {-
 ToDo
 * generalize show for more than just Integers
+* on multiple runs, the node `visited` state stays True
 -}
