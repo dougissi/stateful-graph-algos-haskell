@@ -92,10 +92,8 @@ bfs g s e =
                         in aux g' e q'
 
 
-shortestPathsFromStart :: Graph -> Int -> [(Int, Int)]
-shortestPathsFromStart g s = 
-    let ks = [x | x <- keys g, x /= s]
-    in reverse (aux g s ks [])
+shortestPathsFromStart :: Graph -> Int -> [Int] -> [(Int, Int)]
+shortestPathsFromStart g s ks = reverse (aux g s ks [])
     where
         aux g s [] o     = o
         aux g s (n:ns) o = aux g s ns ((n, bfs g s n) : o)
@@ -104,10 +102,21 @@ shortestPathsFromStart g s =
 shortestPaths :: Graph -> [(Int, [(Int, Int)])]
 shortestPaths g =
     let ks = keys g
-    in reverse (aux g ks [])
+    in reverse (aux g ks ks [])
     where
-        aux g [] acc = acc
-        aux g (s:ns) acc = aux g ns ((s, shortestPathsFromStart g s):acc)
+        aux g ks [] acc = acc
+        aux g ks (s:ns) acc = 
+            let newPaths = shortestPathsFromStart g s ns
+                smallerKs = [x | x <- ks, x < s]
+                oldPaths = reverse (getOldPaths s acc smallerKs [])
+            in aux g ks ns ((s, oldPaths ++ newPaths):acc)
+        
+        getOldPaths s sp [] acc = acc
+        getOldPaths s sp (i:is) acc = 
+            let (Just isp) = P.lookup i sp
+                (Just sisp) = P.lookup s isp
+            in getOldPaths s sp is ((i, sisp):acc)
+
 
 
                                         
