@@ -1,6 +1,7 @@
 import BuildGraphs
 import Data.Set as S
 import Data.Map as M
+import Data.Maybe
 import Control.Monad.State
 
 
@@ -19,7 +20,7 @@ traversalM g root = do
         dfs g root = do
             (v, t) <- get
             case M.lookup root g of
-                Nothing -> return t
+                Nothing        -> return t
                 Just neighbors -> do
                     put (S.insert root v, t ++ [root])  -- consider root to be visited
                     loop g neighbors
@@ -39,3 +40,34 @@ traversal :: Graph -> Node -> Traversal
 traversal g root =
     let res = evalState (traversalM g root) (S.empty, [])
     in res
+
+type Depth = Int
+type Queue = [(Int, Depth)]
+type StateBFS = (VisitedNodes, Queue)
+
+bfs :: Graph -> Int -> Int -> State StateBFS Int
+bfs g s e = do
+    case M.lookup s g of
+        Nothing -> return (-1)  -- start not in graph
+        Just _  ->
+            case M.lookup e g of
+                Nothing -> return (-1)  -- end not in graph
+                _       -> do 
+                    put (S.empty, [(s, 0)])
+                    aux g e
+    where
+        aux g e = do
+            (v, queue) <- get
+
+            case queue of
+                []                            -> return (-1) -- queue empty; never reached end
+                ((i, d): q) | i == e          -> return d    -- at end; return depth
+                ((i, d): q) | i `S.member` v  -> do          -- already visited: don't add to queue
+                    put (v, q)
+                    aux g e     
+                ((i, d): q)                   -> do          -- not yet visited: add to queue
+                    let Just neighbors = M.lookup i g
+                        q' = q ++ [(i, d + 1) | i <- neighbors ]
+                        v' = S.insert i v
+                    put (v', q')
+                    aux g e
