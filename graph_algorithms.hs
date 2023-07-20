@@ -4,8 +4,8 @@ import Data.Set as S
 import Data.IntMap as M
 
 
-traverseGraph :: Graph -> Int -> [Int]
-traverseGraph g root = 
+traversal :: Graph -> Int -> [Int]
+traversal g root = 
     let (_, traversal) = dfs g root S.empty []
     in traversal
     where

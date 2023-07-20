@@ -9,19 +9,19 @@ type Traversal = [Int]
 type TraversalState = (VisitedNodes, Traversal)
 
 
-traverseGraph :: Graph -> Int -> State TraversalState Traversal
-traverseGraph g root = do
+traversalM :: Graph -> Int -> State TraversalState Traversal
+traversalM g root = do
     dfs g root
     (_, t) <- get
     return t
 
     where
         dfs g root = do
-            (visited, t) <- get
+            (v, t) <- get
             case M.lookup root g of
                 Nothing -> return t
                 Just neighbors -> do
-                    put (S.insert root visited, t ++ [root])  -- consider root to be visited
+                    put (S.insert root v, t ++ [root])  -- consider root to be visited
                     loop g neighbors
 
         loop _ [] = do
@@ -29,13 +29,13 @@ traverseGraph g root = do
             return t
 
         loop g (i:is) = do
-            (visited, t) <- get
-            if i `S.notMember` visited
+            (v, t) <- get
+            if i `S.notMember` v
                 then dfs g i
                 else return t  -- do nothing
             loop g is
 
-trav g root =
-    let res = evalState (traverseGraph g root) (S.empty, [])
+traveral g root =
+    let res = evalState (traversalM g root) (S.empty, [])
     in res
 
