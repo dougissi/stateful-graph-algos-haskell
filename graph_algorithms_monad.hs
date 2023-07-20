@@ -1,4 +1,5 @@
 import BuildGraphs
+import Prelude as P 
 import Data.Set as S
 import Data.Map as M
 import Data.Maybe
@@ -72,3 +73,30 @@ bfs g s e = do
                             v' = S.insert i v
                         put (v', q'')
                         aux g e
+
+
+shortestPathsFromStart :: Graph -> Node -> [Node] -> [(Node, Node)]
+shortestPathsFromStart g s ks = reverse (aux g s ks [])
+    where
+        aux g s [] acc     = acc
+        aux g s (n:ns) acc = let sp = evalState (bfs g s n) (S.empty, [])
+                             in aux g s ns ((n, sp) : acc)
+
+
+shortestPaths :: Graph -> [(Node, [(Node, Node)])]
+shortestPaths g =
+    let ks = keys g
+    in reverse (aux g ks ks [])
+    where
+        aux g ks [] acc = acc
+        aux g ks (s:ns) acc = 
+            let newPaths = shortestPathsFromStart g s ns
+                smallerKs = [x | x <- ks, x < s]
+                oldPaths = reverse (getOldPaths s acc smallerKs [])
+            in aux g ks ns ((s, oldPaths ++ newPaths):acc)
+        
+        getOldPaths s sp [] acc = acc
+        getOldPaths s sp (i:is) acc = 
+            let (Just isp) = P.lookup i sp
+                (Just sisp) = P.lookup s isp
+            in getOldPaths s sp is ((i, sisp):acc)
