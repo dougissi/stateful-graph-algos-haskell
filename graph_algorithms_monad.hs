@@ -1,15 +1,15 @@
 import BuildGraphs
 import Data.Set as S
-import Data.IntMap as M
+import Data.Map as M
 import Control.Monad.State
 
 
-type VisitedNodes = S.Set Int
-type Traversal = [Int]
+type VisitedNodes = S.Set Node
+type Traversal = [Node]
 type TraversalState = (VisitedNodes, Traversal)
 
 
-traversalM :: Graph -> Int -> State TraversalState Traversal
+traversalM :: Graph -> Node -> State TraversalState Traversal
 traversalM g root = do
     dfs g root
     (_, t) <- get
@@ -35,7 +35,7 @@ traversalM g root = do
                 else return t  -- do nothing
             loop g is
 
-traveral g root =
+traversal :: Graph -> Node -> Traversal
+traversal g root =
     let res = evalState (traversalM g root) (S.empty, [])
     in res
-

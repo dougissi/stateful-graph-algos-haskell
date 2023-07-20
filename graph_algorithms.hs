@@ -1,10 +1,10 @@
 import BuildGraphs
 import Prelude as P
 import Data.Set as S
-import Data.IntMap as M
+import Data.Map as M
 
 
-traversal :: Graph -> Int -> [Int]
+traversal :: Graph -> Node -> [Node]
 traversal g root = 
     let (_, traversal) = dfs g root S.empty []
     in traversal
@@ -23,7 +23,7 @@ traversal g root =
                 else let (v', t') = dfs g i v t
                      in loop g root is v' t'
 
-bfs :: Graph -> Int -> Int -> Int
+bfs :: Graph -> Node -> Node -> Node
 bfs g s e = 
     case M.lookup s g of
         Nothing -> -1  -- start not in graph
@@ -45,14 +45,14 @@ bfs g s e =
                         in aux g e v' q'
 
 
-shortestPathsFromStart :: Graph -> Int -> [Int] -> [(Int, Int)]
+shortestPathsFromStart :: Graph -> Node -> [Node] -> [(Node, Node)]
 shortestPathsFromStart g s ks = reverse (aux g s ks [])
     where
         aux g s [] o     = o
         aux g s (n:ns) o = aux g s ns ((n, bfs g s n) : o)
 
 
-shortestPaths :: Graph -> [(Int, [(Int, Int)])]
+shortestPaths :: Graph -> [(Node, [(Node, Node)])]
 shortestPaths g =
     let ks = keys g
     in reverse (aux g ks ks [])
@@ -81,6 +81,6 @@ main = do
 
 {-
 ToDo
-* generalize show for more than just Integers
+* generalize show for more than just Nodeegers
 * on multiple runs, the node `visited` state stays True
 -}
