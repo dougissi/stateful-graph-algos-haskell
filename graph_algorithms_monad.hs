@@ -7,8 +7,9 @@ import Control.Monad.State
 data Node = Node { val :: Int, neighbors :: [Int] }
 type Graph = M.IntMap Node
 type VisitedNodes = S.Set Int
-type GraphState = (Graph, VisitedNodes)
+type GraphState = Graph
 type Traversal = [Int]
+type TraversalState = (VisitedNodes, Traversal)
 
 instance Show Node where
     show (Node a neighbors) = "Node " ++ show a ++ " " ++ show neighbors
@@ -53,32 +54,29 @@ buildGraph pairs = reverseNeighbors (aux pairs M.empty)
         reverseNeighbors = M.map (\(Node x neighbors) -> Node x (reverse neighbors))
         
 
-type TraversalState = (Graph, VisitedNodes, Traversal)
-
-traverseGraph :: Int -> State TraversalState Traversal
-traverseGraph root = do
-    dfs root
-    (_, _, t) <- get
+traverseGraph :: Graph -> Int -> State TraversalState Traversal
+traverseGraph g root = do
+    dfs g root
+    (_, t) <- get
     return t
 
     where
-        dfs root = do
-            (g, visited, t) <- get
+        dfs g root = do
+            (visited, t) <- get
             case M.lookup root g of
                 Nothing -> return t
                 Just (Node _ neighbors) -> do
-                    put (g, S.insert root visited, t ++ [root])  -- consider root to be visited
-                    loop neighbors            
+                    put (S.insert root visited, t ++ [root])  -- consider root to be visited
+                    loop g neighbors            
             
-        loop [] = do
-            (_, _, t) <- get
+        loop _ [] = do
+            (_, t) <- get
             return t
 
-        loop (i:is) = do
-            (g, visited, t) <- get
+        loop g (i:is) = do
+            (visited, t) <- get
             if i `elem` visited 
                 then return t
-                else dfs i
-            loop is
+                else dfs g i
+            loop g is
     
--- startState = (M.fromList [(1, Node 1 [])], S.empty)
