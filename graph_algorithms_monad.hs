@@ -57,17 +57,18 @@ bfs g s e = do
                     aux g e
     where
         aux g e = do
-            (v, queue) <- get
-
-            case queue of
-                []                            -> return (-1) -- queue empty; never reached end
-                ((i, d): q) | i == e          -> return d    -- at end; return depth
-                ((i, d): q) | i `S.member` v  -> do          -- already visited: don't add to queue
-                    put (v, q)
-                    aux g e     
-                ((i, d): q)                   -> do          -- not yet visited: add to queue
-                    let Just neighbors = M.lookup i g
-                        q' = q ++ [(i, d + 1) | i <- neighbors ]
-                        v' = S.insert i v
-                    put (v', q')
-                    aux g e
+            (v, q) <- get
+            case q of
+                []           -> return (-1) -- queue empty; never reached end
+                ((i, d): q') -> do
+                    if i == e                    -- at end; return depth
+                        then return d    
+                    else if i `S.member` v       -- already visited: don't add to queue
+                        then do put (v, q')
+                                aux g e
+                    else do                      -- haven't visited: append to queue
+                        let Just neighbors = M.lookup i g
+                            q'' = q' ++ [(i, d + 1) | i <- neighbors ]
+                            v' = S.insert i v
+                        put (v', q'')
+                        aux g e
