@@ -1,0 +1,71 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           stateful-graph-algos
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/dougissi/stateful-graph-algos#readme>
+homepage:       https://github.com/dougissi/stateful-graph-algos#readme
+bug-reports:    https://github.com/dougissi/stateful-graph-algos/issues
+author:         Douglas Issichopoulos
+maintainer:     doi4@illinois.edu
+copyright:      2023 Douglas Issichopoulos
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/dougissi/stateful-graph-algos
+
+library
+  exposed-modules:
+      GraphAlgos
+      GraphAlgosMonad
+      GraphsCommon
+      Lib
+  other-modules:
+      Paths_stateful_graph_algos
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , transformers
+  default-language: Haskell2010
+
+executable stateful-graph-algos-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_stateful_graph_algos
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , stateful-graph-algos
+    , transformers
+  default-language: Haskell2010
+
+test-suite stateful-graph-algos-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_stateful_graph_algos
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      HUnit >=1.5
+    , base >=4.7 && <5
+    , containers
+    , stateful-graph-algos
+    , transformers
+  default-language: Haskell2010

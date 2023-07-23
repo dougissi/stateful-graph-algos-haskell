@@ -5,7 +5,6 @@ import Data.Map as M
     ( empty, lookup, insert, map, Map, keys )
 import Data.Maybe (fromMaybe)
 import System.Environment   
-import System.Directory  
 import System.IO
 
 

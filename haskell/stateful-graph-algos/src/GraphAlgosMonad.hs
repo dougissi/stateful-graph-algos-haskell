@@ -1,3 +1,5 @@
+module GraphAlgosMonad where
+
 import GraphsCommon
 import Prelude as P 
 import Data.Set as S

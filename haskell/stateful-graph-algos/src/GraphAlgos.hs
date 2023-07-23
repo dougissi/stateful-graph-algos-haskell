@@ -1,3 +1,5 @@
+module GraphAlgos where
+
 import GraphsCommon
 import Prelude as P
 import Data.Set as S
@@ -40,6 +42,6 @@ bfs g s e =
                 in if i `S.member` v
                     then aux g e v q  -- already visited: don't add to queue
                     else              -- not yet visited: add to queue
-                        let q' = q ++ [(i, d + 1) | i <- neighbors]
+                        let q' = q ++ [(x, d + 1) | x <- neighbors]
                             v' = S.insert i v  -- consider current node visited
                         in aux g e v' q'
