@@ -1,4 +1,4 @@
-module GraphAlgosMonad where
+module GraphAlgosStateful where
 
 import GraphsCommon
 import Prelude as P 
