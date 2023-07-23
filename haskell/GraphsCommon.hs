@@ -50,21 +50,26 @@ buildGraph pairs = reverseNeighbors (aux pairs M.empty)
         reverseNeighbors = M.map reverse
 
 
-shortestPathsFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Node)]
-shortestPathsFromStart g s ks bfs = reverse (aux g s ks [])
+shortestPathLensFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Node)]
+shortestPathLensFromStart g s ks bfs = reverse (aux g s ks [])
     where
         aux g s [] acc     = acc
-        aux g s (n:ns) acc = aux g s ns ((n, bfs g s n) : acc)
+        aux g s (n:ns) acc = 
+            let len = bfs g s n
+                newAcc = case len of
+                    (-1) -> acc  -- don't include -1 paths
+                    _    -> (n, len) : acc
+            in aux g s ns newAcc
 
 
-shortestPaths :: Graph -> (Graph -> Node -> Node -> Int) -> [(Node, [(Node, Node)])]
-shortestPaths g bfs =
+shortestPathLens :: Graph -> (Graph -> Node -> Node -> Int) -> [(Node, [(Node, Node)])]
+shortestPathLens g bfs =
     let ks = keys g
     in reverse (aux g ks ks [])
     where
         aux g ks [] acc = acc
         aux g ks (s:ns) acc = 
-            let newPaths = shortestPathsFromStart g s ns bfs
+            let newPaths = shortestPathLensFromStart g s ns bfs
                 smallerKs = [x | x <- ks, x < s]
                 oldPaths = reverse (getOldPaths s acc smallerKs [])
             in aux g ks ns ((s, oldPaths ++ newPaths):acc)
@@ -72,8 +77,10 @@ shortestPaths g bfs =
         getOldPaths s sp [] acc = acc
         getOldPaths s sp (i:is) acc = 
             let (Just isp) = P.lookup i sp
-                (Just sisp) = P.lookup s isp
-            in getOldPaths s sp is ((i, sisp):acc)
+                newAcc = case P.lookup s isp of
+                    Just sisp -> (i, sisp) : acc
+                    Nothing   -> acc
+            in getOldPaths s sp is newAcc
 
 
 run traversal bfs edgesFilename = do
@@ -86,5 +93,5 @@ run traversal bfs edgesFilename = do
     print "traversal"
     print (traversal graph 1)
 
-    print "shortest paths"
-    print (shortestPaths graph bfs)
+    print "shortest path lengths"
+    print (shortestPathLens graph bfs)

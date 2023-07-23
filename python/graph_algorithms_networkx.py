@@ -28,15 +28,15 @@ def get_formatted_traversal(G: nx.Graph, src: int) -> str:
     return str(traversal).replace(' ', '')
 
 
-def get_formatted_shortest_paths(G: nx.Graph) -> str:
-    shortest_paths = []
+def get_formatted_shortest_path_lens(G: nx.Graph) -> str:
+    shortest_path_lens = []
     for (src, paths_dict) in nx.all_pairs_shortest_path_length(G):
-        paths = []
+        lens = []
         for (dest, length) in paths_dict.items():
             if dest != src:
-                paths.append((dest, length))
-        shortest_paths.append((src, sorted(paths)))
-    return str(shortest_paths).replace(' ', '')
+                lens.append((dest, length))
+        shortest_path_lens.append((src, sorted(lens)))
+    return str(shortest_path_lens).replace(' ', '')
 
 
 if __name__ == "__main__":
@@ -46,11 +46,11 @@ if __name__ == "__main__":
 
     G = buildGraph(args.edgesFile)
 
-    traversal = get_formatted_traversal(G, src=4)
-    print("traversal:", traversal)
+    traversal = get_formatted_traversal(G, src=1)
+    print(f"traversal:\n{traversal}")
 
-    shortest_paths = get_formatted_shortest_paths(G)
-    print("shortest paths:", shortest_paths)
+    shortest_path_lens = get_formatted_shortest_path_lens(G)
+    print(f"shortest path lengths:\n{shortest_path_lens}")
 
     nx.draw(G, with_labels=True, font_weight='bold')
     plt.show()
