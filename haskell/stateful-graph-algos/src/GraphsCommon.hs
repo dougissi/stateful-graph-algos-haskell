@@ -61,7 +61,7 @@ shortestPathLensFromStart g s ks bfs = reverse (aux g s ks [])
             in aux g s ns newAcc
 
 
-shortestPathLens :: Graph -> (Graph -> Node -> Node -> Int) -> [(Node, [(Node, Node)])]
+shortestPathLens :: Graph -> (Graph -> Node -> Node -> Int) -> [(Node, [(Node, Int)])]
 shortestPathLens g bfs =
     let ks = keys g
     in reverse (aux g ks ks [])

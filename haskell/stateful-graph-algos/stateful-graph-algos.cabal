@@ -25,8 +25,8 @@ source-repository head
 
 library
   exposed-modules:
-      GraphAlgos
-      GraphAlgosMonad
+      GraphAlgosPure
+      GraphAlgosStateful
       GraphsCommon
       Lib
   other-modules:

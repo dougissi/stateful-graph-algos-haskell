@@ -1,14 +1,32 @@
-import Test.HUnit
+import Test.HUnit hiding (Node)
+import GraphsCommon
+import GraphAlgosStateful as GAS
+import GraphAlgosPure as GAP
 
+-- Linear
+--
+-- 1
+--  \
+--   2
+--    \
+--     3
+--      \
+--       4
 
-foo :: Int -> (Int, Int)
-foo x = (1, x)
+linearGraph :: Graph
+linearGraph = buildGraph [(1,2), (2,3), (3,4)]
 
-test1 :: Test
-test1 = TestCase (assertEqual "for (foo 3)," (1,2) (foo 3))
+expectedLinearTraversal :: [Node]
+expectedLinearTraversal = [1, 2, 3, 4]
+
+expectedLinearShortestPathLens :: [(Node, [(Node, Int)])]
+expectedLinearShortestPathLens = [(1,[(2,1),(3,2),(4,3)]),(2,[(1,1),(3,1),(4,2)]),(3,[(1,2),(2,1),(4,1)]),(4,[(1,3),(2,2),(3,1)])]
 
 tests :: Test
-tests = TestList [TestLabel "test1" test1]
+tests = test [  "for stateful linear traversal,"          ~: expectedLinearTraversal ~=? GAS.traversal linearGraph 1
+              , "for pure linear traversal,"              ~: expectedLinearTraversal ~=? GAP.traversal linearGraph 1
+              , "for stateful linear shortest path lens," ~: expectedLinearShortestPathLens ~=? shortestPathLens linearGraph GAS.bfs
+              , "for pure linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? shortestPathLens linearGraph GAP.bfs]
 
 main :: IO Counts
 main = runTestTT tests
