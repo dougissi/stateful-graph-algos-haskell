@@ -1,4 +1,4 @@
-module GraphAlgosPure where
+module GraphAlgos where
 
 import GraphsCommon
 import Prelude as P
