@@ -4,7 +4,6 @@ import GraphsCommon
 import Prelude as P 
 import Data.Set as S
 import Data.Map as M
-import Data.Maybe
 import Control.Monad.Trans.State
 
 type VisitedNodes = S.Set Node

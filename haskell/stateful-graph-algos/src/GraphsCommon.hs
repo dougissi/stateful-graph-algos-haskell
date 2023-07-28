@@ -29,25 +29,24 @@ formatGraphFile s =
     in P.map makeIntPair strPairs
 
 
-connect :: Graph -> Edge -> Graph
-connect g (i1, i2) =
-    let n1 = aux1 i1 g
-        n2 = aux1 i2 g
-        n1' = aux2 i2 n1
-        n2' = aux2 i1 n2
+addEdge :: Graph -> Edge -> Graph
+addEdge g (i1, i2) =
+    let n1 = getNeighbors i1 g
+        n2 = getNeighbors i2 g
+        n1' = addNeighbor i2 n1
+        n2' = addNeighbor i1 n2
     in M.insert i1 n1' (M.insert i2 n2' g)
-    where aux1 i g = fromMaybe [] (M.lookup i g)
-          aux2 i neighbors = if i `elem` neighbors
-                                then neighbors
-                                else i:neighbors
+    where getNeighbors i g = fromMaybe [] (M.lookup i g)
+          addNeighbor i neighbors = if i `elem` neighbors
+                                        then neighbors
+                                        else i:neighbors
 
 
 buildGraph :: [Edge] -> Graph
 buildGraph edges = reverseNeighbors (aux edges M.empty)
-    where
-        aux [] g = g
-        aux (e:es) g = aux es (connect g e)
-        reverseNeighbors = M.map reverse
+    where aux [] g = g
+          aux (e:es) g = aux es (addEdge g e)
+          reverseNeighbors = M.map reverse
 
 
 shortestPathLensFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Int)]
@@ -84,7 +83,6 @@ shortestPathLens g bfs =
 
 
 run traversal bfs edgesFilename = do
-    -- (edgesFilename:args) <- getArgs
     file <- openFile edgesFilename ReadMode
     contents <- hGetContents file
     let edges = formatGraphFile contents
