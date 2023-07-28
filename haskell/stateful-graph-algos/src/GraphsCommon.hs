@@ -9,6 +9,7 @@ import System.IO
 
 
 type Node = Int
+type Edge = (Node, Node)
 type Neighbors = [Node]
 type Graph = M.Map Node Neighbors  -- map each node to its neighbors
 
@@ -21,15 +22,15 @@ makeIntPair :: [String] -> (Int, Int)
 makeIntPair [s1,s2] = (strToInt s1, strToInt s2)
 
 
-formatGraphFile :: String -> [(Node, Node)]
+formatGraphFile :: String -> [Edge]
 formatGraphFile s =
     let ls = lines s
         strPairs = P.map words ls
     in P.map makeIntPair strPairs
 
 
-connect :: Graph -> Node -> Node -> Graph
-connect g i1 i2 =
+connect :: Graph -> Edge -> Graph
+connect g (i1, i2) =
     let n1 = aux1 i1 g
         n2 = aux1 i2 g
         n1' = aux2 i2 n1
@@ -41,15 +42,15 @@ connect g i1 i2 =
                                 else i:neighbors
 
 
-buildGraph :: [(Node, Node)] -> Graph
-buildGraph pairs = reverseNeighbors (aux pairs M.empty)
+buildGraph :: [Edge] -> Graph
+buildGraph edges = reverseNeighbors (aux edges M.empty)
     where
         aux [] g = g
-        aux ((i1, i2):is) g = aux is (connect g i1 i2)
+        aux (e:es) g = aux es (connect g e)
         reverseNeighbors = M.map reverse
 
 
-shortestPathLensFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Node)]
+shortestPathLensFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Int)]
 shortestPathLensFromStart g s ks bfs = reverse (aux g s ks [])
     where
         aux g s [] acc     = acc
