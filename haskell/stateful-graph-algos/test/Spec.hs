@@ -1,9 +1,69 @@
 import Test.HUnit hiding (Node)
+import Data.Map as M (fromList)
 import GraphsCommon
 import GraphAlgosMonad as GAM
 import GraphAlgos as GA
 
--- Linear
+
+-- Graph Construction, Triangle
+--
+--     1
+--    / \
+--   2 - 3
+--
+
+triGraph :: Graph
+triGraph = buildGraph [(1,2), (1,3), (2,3)]
+
+triGraphExpected :: Graph
+triGraphExpected = M.fromList [ (1,[2,3])
+                               ,(2,[1,3])
+                               ,(3,[1,2])]
+
+triGraph2 :: Graph
+triGraph2 = buildGraph [(1,2), (1,3), (2,3), (1,2)]  -- duplicate edge ignored
+
+triGraph3 :: Graph
+triGraph3 = buildGraph [(2,1), (1,3), (2,3)]  -- node ordering in edge doesn't matter
+
+triGraph4:: Graph
+triGraph4 = buildGraph [(1,3), (2,3), (1,2)]  -- different edge ordering should produce different neighbor orderings
+
+triGraph4Expected :: Graph
+triGraph4Expected =  M.fromList [ (1,[3,2])  -- notice neighbor orderings for nodes 1 and 2
+                                 ,(2,[3,1])
+                                 ,(3,[1,2])]
+
+buildGraphTests :: Test
+buildGraphTests = test [  "for building triangle graph trivial,"                 ~: triGraphExpected ~=? triGraph
+                        , "for building triangle graph with dup edge,"           ~: triGraphExpected ~=? triGraph2
+                        , "for building triangle graph with reverse node order," ~: triGraphExpected ~=? triGraph3
+                        , "for building triangle graph neighbor order,"          ~: triGraph4Expected ~=? triGraph4]
+
+
+-- Traversal and Shortest Path Lengths, Triangle
+--
+--     1
+--    / \
+--   2 - 3
+--
+-- Logic: shortest paths between all nodes should be of length 1
+
+expectedTriangleTraversal :: [Node]
+expectedTriangleTraversal = [1,2,3]
+
+expectedTriangleShortestPathLens :: [(Node, [(Node, Int)])]
+expectedTriangleShortestPathLens = [ (1,[(2,1),(3,1)])
+                                    ,(2,[(1,1),(3,1)])
+                                    ,(3,[(1,1),(2,1)])]
+
+triangleTests :: Test
+triangleTests = test [  "for stateful triangle traversal,"         ~: expectedTriangleTraversal ~=? GAM.traversal triGraph 1
+                      , "for pure triangle traversal,"             ~: expectedTriangleTraversal ~=? GA.traversal triGraph 1
+                      , "for stateful triangle shorest path lens," ~: expectedTriangleShortestPathLens ~=? shortestPathLens triGraph GAM.bfs
+                      , "for pure triangle shortest path lens,"    ~: expectedTriangleShortestPathLens ~=? shortestPathLens triGraph GA.bfs]
+
+-- Traversal and Shortest Path Lengths, Linear Graph
 --
 -- 1
 --  \
@@ -37,34 +97,7 @@ linearTests = test [  "for stateful linear traversal,"          ~: expectedLinea
                     , "for pure linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? shortestPathLens linearGraph GA.bfs]
 
 
--- Triangle
---
---     1
---    / \
---   2 - 3
---
--- Logic: shortest paths between all nodes should be of length 1
-
-triangleGraph :: Graph
-triangleGraph = buildGraph [(1,2), (1,3), (2,3)]
-
-expectedTriangleTraversal :: [Node]
-expectedTriangleTraversal = [1,2,3]
-
-expectedTriangleShortestPathLens :: [(Node, [(Node, Int)])]
-expectedTriangleShortestPathLens = [ (1,[(2,1),(3,1)])
-                                    ,(2,[(1,1),(3,1)])
-                                    ,(3,[(1,1),(2,1)])]
-
-triangleTests :: Test
-triangleTests = test [  "for stateful triangle traversal,"         ~: expectedTriangleTraversal ~=? GAM.traversal triangleGraph 1
-                      , "for pure triangle traversal,"             ~: expectedTriangleTraversal ~=? GA.traversal triangleGraph 1
-                      , "for stateful triangle shorest path lens," ~: expectedTriangleShortestPathLens ~=? shortestPathLens triangleGraph GAM.bfs
-                      , "for pure triangle shortest path lens,"    ~: expectedTriangleShortestPathLens ~=? shortestPathLens triangleGraph GA.bfs]
-
-
-
--- Triangle and Rectangle (Disconnected)
+-- Traversal and Shortest Path Lengths, Triangle and Rectangle (Disconnected)
 --
 --     1
 --    / \
@@ -104,7 +137,7 @@ triRecTests = test [  "for stateful tri+rec traversal from 1,"     ~: expectedTr
                       , "for pure tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? shortestPathLens triRecGraph GA.bfs]
 
 
--- Unbalanced Kite
+-- Traversal and Shortest Path Lengths, Unbalanced Kite
 --
 --       1
 --     /   \
@@ -144,8 +177,10 @@ kiteTests = test [  "for stateful unbalanced kite traversal,"           ~: expec
                     , "for pure unbalanced kite shortest path lens,"    ~: expectedKiteShortestPathLens ~=? shortestPathLens kiteGraph GA.bfs]
 
 
+
+-- Run Tests
 tests :: Test
-tests = test [linearTests, triangleTests, triRecTests, kiteTests]
+tests = test [buildGraphTests, linearTests, triangleTests, triRecTests, kiteTests]
 
 main :: IO Counts
 main = runTestTT tests

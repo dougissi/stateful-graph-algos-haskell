@@ -1,17 +1,15 @@
 module GraphsCommon where
 
 import Prelude as P
-import Data.Map as M
-    ( empty, lookup, insert, map, Map, keys )
+import Data.Map as M ( empty, lookup, insert, map, Map, keys )
 import Data.Maybe (fromMaybe)
-import System.Environment   
 import System.IO
 
 
 type Node = Int
 type Edge = (Node, Node)
 type Neighbors = [Node]
-type Graph = M.Map Node Neighbors  -- map each node to its neighbors
+type Graph = M.Map Node Neighbors
 
 
 strToInt :: String -> Int
@@ -82,6 +80,7 @@ shortestPathLens g bfs =
             in getOldPaths s sp is newAcc
 
 
+run :: (Graph -> Node -> [Node]) -> (Graph -> Node -> Node -> Int) -> String -> IO ()
 run traversal bfs edgesFilename = do
     file <- openFile edgesFilename ReadMode
     contents <- hGetContents file
