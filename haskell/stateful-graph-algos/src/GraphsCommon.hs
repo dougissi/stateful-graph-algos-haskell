@@ -20,8 +20,8 @@ makeIntPair :: [String] -> (Int, Int)
 makeIntPair [s1,s2] = (strToInt s1, strToInt s2)
 
 
-formatGraphFile :: String -> [Edge]
-formatGraphFile s =
+formatEdgesFile :: String -> [Edge]
+formatEdgesFile s =
     let ls = lines s
         strPairs = P.map words ls
     in P.map makeIntPair strPairs
@@ -84,7 +84,7 @@ run :: (Graph -> Node -> [Node]) -> (Graph -> Node -> Node -> Int) -> String -> 
 run traversal bfs edgesFilename = do
     file <- openFile edgesFilename ReadMode
     contents <- hGetContents file
-    let edges = formatGraphFile contents
+    let edges = formatEdgesFile contents
         graph = buildGraph edges
 
     print "traversal"
