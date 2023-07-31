@@ -7,44 +7,44 @@ import Data.Map as M
 
 
 traversal :: Graph -> Node -> [Node]
-traversal g root = 
-    let (_, traversal) = dfs g root S.empty []
-    in traversal
+traversal graph root = 
+    let (_, trav) = dfs graph root S.empty []
+    in trav
     where
-        dfs g root v t = 
-            case M.lookup root g of
+        dfs g r v t = 
+            case M.lookup r g of
                 Nothing -> (v, t)
                 Just neighbors -> 
-                    let v' = S.insert root v  -- consider root to be visited
-                        t' = t ++ [root]
-                    in loop g root neighbors v' t'
-        loop g root [] v t = (v, t)
-        loop g root (i:is) v t =
+                    let v' = S.insert r v  -- consider root to be visited
+                        t' = t ++ [r]
+                    in loop g r neighbors v' t'
+        loop _ _ [] v t = (v, t)
+        loop g r (i:is) v t =
             if i `S.member` v
-                then loop g root is v t
+                then loop g r is v t
                 else let (v', t') = dfs g i v t
-                     in loop g root is v' t'
+                     in loop g r is v' t'
 
 bfs :: Graph -> Node -> Node -> Int
-bfs g s e = 
-    case M.lookup s g of
+bfs graph start end = 
+    case M.lookup start graph of
         Nothing -> -1  -- start not in graph
         Just _  ->
-            case M.lookup e g of
+            case M.lookup end graph of
                 Nothing -> -1  -- end not in graph
-                _       -> aux g e S.empty [(s, 0)]
-    where
-        aux _ _ _ [] = -1      -- queue empty; never reached end
-        aux g e v ((i, d): q)  -- pop queue
-            | i == e    = d    -- done
-            | otherwise =
-                let Just neighbors = M.lookup i g
-                in if i `S.member` v
-                    then aux g e v q  -- already visited: don't add to queue
-                    else              -- not yet visited: add to queue
-                        let q' = q ++ [(x, d + 1) | x <- neighbors]
-                            v' = S.insert i v  -- consider current node visited
-                        in aux g e v' q'
+                _       -> aux graph end S.empty [(start, 0)] -- initialize empty set of visited node and with only the start node in the queue
+    where aux _ _ _ [] = -1      -- queue empty; never reached end
+          aux g e v ((i, d): q)  -- pop queue
+              | i == e    = d    -- done
+              | otherwise = 
+                  case M.lookup i g of
+                      Nothing -> aux g e v q  -- next node in queue not in graph; skip
+                      Just neighbors -> if i `S.member` v then 
+                                          aux g e v q  -- next node already visited; skip
+                                        else           -- next node not yet visited; add to queue
+                                          let q' = q ++ [(x, d + 1) | x <- neighbors]
+                                              v' = S.insert i v  -- consider current node visited
+                                          in aux g e v' q'
 
 
 shortestPathLens :: Graph -> [(Node, [(Node, Int)])]
