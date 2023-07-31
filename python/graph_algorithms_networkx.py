@@ -52,7 +52,5 @@ if __name__ == "__main__":
     shortest_path_lens = get_formatted_shortest_path_lens(G)
     print(f"shortest path lengths:\n{shortest_path_lens}")
 
-    # nx.draw(G, with_labels=True, font_weight='bold')
-    # plt.show()
-
-    
+    nx.draw(G, with_labels=True, font_weight='bold')
+    plt.show()
