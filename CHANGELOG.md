@@ -1,4 +1,4 @@
-# Changelog for `stateful-graph-algos`
+# Changelog for `stateful-graph-algos-haskell`
 
 All notable changes to this project will be documented in this file.
 

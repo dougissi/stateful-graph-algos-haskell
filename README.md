@@ -1,4 +1,4 @@
-# stateful-graph-algos
+# stateful-graph-algos-haskell
 
 * Python
   * packages:

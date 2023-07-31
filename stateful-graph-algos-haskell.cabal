@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           stateful-graph-algos
+name:           stateful-graph-algos-haskell
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/dougissi/stateful-graph-algos#readme>
-homepage:       https://github.com/dougissi/stateful-graph-algos#readme
-bug-reports:    https://github.com/dougissi/stateful-graph-algos/issues
+description:    Please see the README on GitHub at <https://github.com/dougissi/stateful-graph-algos-haskell#readme>
+homepage:       https://github.com/dougissi/stateful-graph-algos-haskell#readme
+bug-reports:    https://github.com/dougissi/stateful-graph-algos-haskell/issues
 author:         Douglas Issichopoulos
 maintainer:     doi4@illinois.edu
 copyright:      2023 Douglas Issichopoulos
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/dougissi/stateful-graph-algos
+  location: https://github.com/dougissi/stateful-graph-algos-haskell
 
 library
   exposed-modules:
@@ -30,7 +30,7 @@ library
       GraphsCommon
       Parse
   other-modules:
-      Paths_stateful_graph_algos
+      Paths_stateful_graph_algos_haskell
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
@@ -40,25 +40,25 @@ library
     , transformers
   default-language: Haskell2010
 
-executable stateful-graph-algos-exe
+executable stateful-graph-algos-haskell-exe
   main-is: Main.hs
   other-modules:
-      Paths_stateful_graph_algos
+      Paths_stateful_graph_algos_haskell
   hs-source-dirs:
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , containers
-    , stateful-graph-algos
+    , stateful-graph-algos-haskell
     , transformers
   default-language: Haskell2010
 
-test-suite stateful-graph-algos-test
+test-suite stateful-graph-algos-haskell-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_stateful_graph_algos
+      Paths_stateful_graph_algos_haskell
   hs-source-dirs:
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
@@ -66,6 +66,6 @@ test-suite stateful-graph-algos-test
       HUnit >=1.5
     , base >=4.7 && <5
     , containers
-    , stateful-graph-algos
+    , stateful-graph-algos-haskell
     , transformers
   default-language: Haskell2010
