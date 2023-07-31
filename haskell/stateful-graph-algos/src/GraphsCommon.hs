@@ -1,4 +1,4 @@
-module GraphsCommon (Graph, Node, Edge, emptyGraph, buildGraph, shortestPathLensViaBFS) where
+module GraphsCommon (Graph, Node, Edge, emptyGraph, buildGraph, viewGraph, shortestPathLensViaBFS) where
 
 import Prelude as P
 import Data.Map as M ( empty, lookup, insert, map, Map, keys )
@@ -15,15 +15,18 @@ emptyGraph :: Graph
 emptyGraph = M.empty
 
 
+getNeighbors :: Graph -> Node -> Neighbors
+getNeighbors g i = fromMaybe [] (M.lookup i g)
+
+
 addEdge :: Graph -> Edge -> Graph
-addEdge graph (i1, i2) =
-    let n1 = getNeighbors i1
-        n2 = getNeighbors i2
+addEdge g (i1, i2) =
+    let n1 = getNeighbors g i1
+        n2 = getNeighbors g i2
         n1' = addNeighbor i2 n1
         n2' = addNeighbor i1 n2
-    in M.insert i1 n1' (M.insert i2 n2' graph)
-    where getNeighbors i = fromMaybe [] (M.lookup i graph)
-          addNeighbor i neighbors = if i `elem` neighbors
+    in M.insert i1 n1' (M.insert i2 n2' g)
+    where addNeighbor i neighbors = if i `elem` neighbors
                                         then neighbors
                                         else i:neighbors
 
@@ -33,6 +36,13 @@ buildGraph edges = aux edges M.empty
     where aux [] g = reverseNeighbors g
           aux (e:es) g = aux es (addEdge g e)
           reverseNeighbors = M.map reverse
+
+
+viewGraph :: Graph -> String
+viewGraph g = if null g then
+                "Graph (empty)"
+              else
+                "Graph: " ++ unwords (P.map (\k -> show k ++ "->" ++ show (getNeighbors g k)) (keys g))
 
 
 shortestPathLensFromStart :: Graph -> Node -> [Node] -> (Graph -> Node -> Node -> Int) -> [(Node, Int)]

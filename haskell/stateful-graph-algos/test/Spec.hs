@@ -3,6 +3,7 @@ import Data.Map as M (fromList)
 import GraphsCommon
 import GraphAlgosMonad as GAM
 import GraphAlgos as GA
+import Parse
 
 
 -- Graph Construction, Triangle
@@ -58,10 +59,10 @@ expectedTriangleShortestPathLens = [ (1,[(2,1),(3,1)])
                                     ,(3,[(1,1),(2,1)])]
 
 triangleTests :: Test
-triangleTests = test [  "for stateful triangle traversal,"         ~: expectedTriangleTraversal ~=? GAM.traversal triGraph 1
-                      , "for pure triangle traversal,"             ~: expectedTriangleTraversal ~=? GA.traversal triGraph 1
-                      , "for stateful triangle shorest path lens," ~: expectedTriangleShortestPathLens ~=? GAM.shortestPathLens triGraph
-                      , "for pure triangle shortest path lens,"    ~: expectedTriangleShortestPathLens ~=? GA.shortestPathLens triGraph]
+triangleTests = test [  "for monadic triangle traversal,"              ~: expectedTriangleTraversal ~=? GAM.traversal triGraph 1
+                      , "for non-monadic triangle traversal,"          ~: expectedTriangleTraversal ~=? GA.traversal triGraph 1
+                      , "for monadic triangle shorest path lens,"      ~: expectedTriangleShortestPathLens ~=? GAM.shortestPathLens triGraph
+                      , "for non-monadic triangle shortest path lens," ~: expectedTriangleShortestPathLens ~=? GA.shortestPathLens triGraph]
 
 -- Traversal and Shortest Path Lengths, Linear Graph
 --
@@ -91,10 +92,10 @@ expectedLinearShortestPathLens = [ (1,[(2,1),(3,2),(4,3)])
                                   ,(4,[(1,3),(2,2),(3,1)])]
 
 linearTests :: Test
-linearTests = test [  "for stateful linear traversal,"          ~: expectedLinearTraversal ~=? GAM.traversal linearGraph 1
-                    , "for pure linear traversal,"              ~: expectedLinearTraversal ~=? GA.traversal linearGraph 1
-                    , "for stateful linear shortest path lens," ~: expectedLinearShortestPathLens ~=? GAM.shortestPathLens linearGraph
-                    , "for pure linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? GA.shortestPathLens linearGraph]
+linearTests = test [  "for monadic linear traversal,"              ~: expectedLinearTraversal ~=? GAM.traversal linearGraph 1
+                    , "for non-monadic linear traversal,"          ~: expectedLinearTraversal ~=? GA.traversal linearGraph 1
+                    , "for monadic linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? GAM.shortestPathLens linearGraph
+                    , "for non-monadic linear shortest path lens," ~: expectedLinearShortestPathLens ~=? GA.shortestPathLens linearGraph]
 
 
 -- Traversal and Shortest Path Lengths, Triangle and Rectangle (Disconnected)
@@ -129,12 +130,12 @@ expectedTriRecShortestPathLens = [(1,[(2,1),(3,1)])
                                   ,(7,[(4,1),(5,2),(6,1)])]
 
 triRecTests :: Test
-triRecTests = test [  "for stateful tri+rec traversal from 1,"     ~: expectedTriRecTraversal1 ~=? GAM.traversal triRecGraph 1
-                      , "for pure tri+rec traversal from 1,"       ~: expectedTriRecTraversal1 ~=? GA.traversal triRecGraph 1
-                      , "for stateful tri+rec traversal from 4,"   ~: expectedTriRecTraversal4 ~=? GAM.traversal triRecGraph 4
-                      , "for pure tri+rec traversal from 4,"       ~: expectedTriRecTraversal4 ~=? GA.traversal triRecGraph 4
-                      , "for stateful tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? GAM.shortestPathLens triRecGraph
-                      , "for pure tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? GA.shortestPathLens triRecGraph]
+triRecTests = test [  "for monadic tri+rec traversal from 1,"         ~: expectedTriRecTraversal1 ~=? GAM.traversal triRecGraph 1
+                      , "for non-monadic tri+rec traversal from 1,"   ~: expectedTriRecTraversal1 ~=? GA.traversal triRecGraph 1
+                      , "for monadic tri+rec traversal from 4,"       ~: expectedTriRecTraversal4 ~=? GAM.traversal triRecGraph 4
+                      , "for non-monadic tri+rec traversal from 4,"   ~: expectedTriRecTraversal4 ~=? GA.traversal triRecGraph 4
+                      , "for monadic tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? GAM.shortestPathLens triRecGraph
+                      , "for non-monadic tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? GA.shortestPathLens triRecGraph]
 
 
 -- Traversal and Shortest Path Lengths, Unbalanced Kite
@@ -171,16 +172,40 @@ expectedKiteShortestPathLens = [ (1,[(2,1),(3,1),(4,2),(5,2),(6,3),(7,4)])
                                 ,(7,[(1,4),(2,3),(3,4),(4,3),(5,2),(6,1)])]
 
 kiteTests :: Test
-kiteTests = test [  "for stateful unbalanced kite traversal,"           ~: expectedKiteTraversal ~=? GAM.traversal kiteGraph 1
-                    , "for pure unbalanced kite traversal,"             ~: expectedKiteTraversal ~=? GA.traversal kiteGraph 1
-                    , "for stateful unbalanced kite shorest path lens," ~: expectedKiteShortestPathLens ~=? GAM.shortestPathLens kiteGraph
-                    , "for pure unbalanced kite shortest path lens,"    ~: expectedKiteShortestPathLens ~=? GA.shortestPathLens kiteGraph]
+kiteTests = test [  "for monadic unbalanced kite traversal,"                ~: expectedKiteTraversal ~=? GAM.traversal kiteGraph 1
+                    , "for non-monadic unbalanced kite traversal,"          ~: expectedKiteTraversal ~=? GA.traversal kiteGraph 1
+                    , "for monadic unbalanced kite shorest path lens,"      ~: expectedKiteShortestPathLens ~=? GAM.shortestPathLens kiteGraph
+                    , "for non-monadic unbalanced kite shortest path lens," ~: expectedKiteShortestPathLens ~=? GA.shortestPathLens kiteGraph]
+
+
+-- Parse Edges File Contents
+goodContents :: String
+goodContents = "1 2\n2 3\n"
+
+extraInt :: String
+extraInt = "1 2\n2 3 4\n"
+
+oneLessInt :: String
+oneLessInt = "1 2\n2\n"
+
+nonInt :: String
+nonInt = "1 2\n2 node3\n"
+
+twoBadLines :: String
+twoBadLines = "1 2\n2 3 4\n5 \n"
+
+parseTests :: Test
+parseTests = test [  "for edges file with good contents," ~: Right [(1,2),(2,3)] ~=? parseEdgesFile goodContents
+                   , "for edges file with extra int,"     ~: Left "Error; these lines cannot be converted to pairs of integers: '2 3 4'" ~=? parseEdgesFile extraInt
+                   , "for edges file with one less int,"  ~: Left "Error; these lines cannot be converted to pairs of integers: '2'" ~=? parseEdgesFile oneLessInt
+                   , "for edges file with non-int,"       ~: Left "Error; these lines cannot be converted to pairs of integers: '2 node3'" ~=? parseEdgesFile nonInt
+                   , "for edges file with 2 bad lines,"   ~: Left "Error; these lines cannot be converted to pairs of integers: '2 3 4', '5 '" ~=? parseEdgesFile twoBadLines]
 
 
 
 -- Run Tests
 tests :: Test
-tests = test [buildGraphTests, linearTests, triangleTests, triRecTests, kiteTests]
+tests = test [buildGraphTests, linearTests, triangleTests, triRecTests, kiteTests, parseTests]
 
 main :: IO Counts
 main = runTestTT tests
