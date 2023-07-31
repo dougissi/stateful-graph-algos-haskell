@@ -15,36 +15,26 @@ type StateBFS = (VisitedNodes, Queue)
 
 
 traversalM :: Graph -> Node -> State TraversalState Traversal
-traversalM g root = do
-    dfs g root
-    (_, t) <- get
-    return t
-
+traversalM g root = do dfs root
     where
-        dfs g root = do
-            (v, t) <- get
-            case M.lookup root g of
-                Nothing        -> return t
-                Just neighbors -> do
-                    put (S.insert root v, t ++ [root])  -- consider root to be visited
-                    loop g neighbors
+        dfs r = do (v, t) <- get
+                   case M.lookup r g of
+                       Nothing        -> return t
+                       Just neighbors -> do put (S.insert r v, t ++ [r])  -- consider root to be visited
+                                            loop neighbors
 
-        loop _ [] = do
-            (_, t) <- get
-            return t
+        loop [] = do (_, t) <- get
+                     return t
 
-        loop g (i:is) = do
-            (v, t) <- get
-            if i `S.notMember` v
-                then dfs g i
-                else return t  -- do nothing
-            loop g is
+        loop (i:is) = do (v, t) <- get
+                         _ <- if i `S.notMember` v 
+                                then dfs i     -- continue traversal
+                                else return t  -- do nothing
+                         loop is
 
 
 traversal :: Graph -> Node -> Traversal
-traversal g root =
-    let res = evalState (traversalM g root) (S.empty, [])
-    in res
+traversal g root = evalState (traversalM g root) (S.empty, [])
 
 
 bfsM :: Graph -> Node -> Node -> State StateBFS Int
@@ -57,9 +47,9 @@ bfsM g s e = do
                 _       -> do           -- start and end both in graph
                     (v, q) <- get
                     put (v, q ++ [(s, 0)])
-                    aux g e
+                    aux
     where
-        aux g e = do
+        aux = do
             (v, q) <- get
             case q of
                 []           -> return (-1)  -- queue empty; fail
@@ -68,13 +58,15 @@ bfsM g s e = do
                         then return d    
                     else if i `S.member` v   -- already visited: don't add to queue
                         then do put (v, q')
-                                aux g e
+                                aux
                     else do                  -- haven't visited: append to queue
-                        let Just neighbors = M.lookup i g
-                            q'' = q' ++ [(i, d + 1) | i <- neighbors ]
-                            v' = S.insert i v
-                        put (v', q'')
-                        aux g e
+                        case M.lookup i g of
+                            Nothing        -> do put (v, q')  -- next node in queue not in graph; skip
+                                                 aux
+                            Just neighbors -> do let q'' = q' ++ [(x, d + 1) | x <- neighbors ]
+                                                     v' = S.insert i v
+                                                 put (v', q'')
+                                                 aux
 
 
 bfs :: Graph -> Node -> Node -> Int
