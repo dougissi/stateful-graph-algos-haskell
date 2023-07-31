@@ -3,7 +3,6 @@ module GraphsCommon where
 import Prelude as P
 import Data.Map as M ( empty, lookup, insert, map, Map, keys )
 import Data.Maybe (fromMaybe)
-import System.IO
 
 
 type Node = Int
@@ -12,12 +11,13 @@ type Neighbors = [Node]
 type Graph = M.Map Node Neighbors
 
 
-strToInt :: String -> Int
-strToInt = read
+emptyGraph :: Graph
+emptyGraph = M.empty
 
 
 makeIntPair :: [String] -> (Int, Int)
 makeIntPair [s1,s2] = (strToInt s1, strToInt s2)
+    where strToInt s = read s :: Int
 
 
 formatEdgesFile :: String -> [Edge]
@@ -59,8 +59,8 @@ shortestPathLensFromStart g s ks bfs = reverse (aux g s ks [])
             in aux g s ns newAcc
 
 
-shortestPathLens :: Graph -> (Graph -> Node -> Node -> Int) -> [(Node, [(Node, Int)])]
-shortestPathLens g bfs =
+shortestPathLensViaBFS :: (Graph -> Node -> Node -> Int) -> Graph -> [(Node, [(Node, Int)])]
+shortestPathLensViaBFS bfs g =
     let ks = keys g
     in reverse (aux g ks ks [])
     where
@@ -78,17 +78,3 @@ shortestPathLens g bfs =
                     Just sisp -> (i, sisp) : acc
                     Nothing   -> acc
             in getOldPaths s sp is newAcc
-
-
-run :: (Graph -> Node -> [Node]) -> (Graph -> Node -> Node -> Int) -> String -> IO ()
-run traversal bfs edgesFilename = do
-    file <- openFile edgesFilename ReadMode
-    contents <- hGetContents file
-    let edges = formatEdgesFile contents
-        graph = buildGraph edges
-
-    print "traversal"
-    print (traversal graph 1)
-
-    print "shortest path lengths"
-    print (shortestPathLens graph bfs)

@@ -60,8 +60,8 @@ expectedTriangleShortestPathLens = [ (1,[(2,1),(3,1)])
 triangleTests :: Test
 triangleTests = test [  "for stateful triangle traversal,"         ~: expectedTriangleTraversal ~=? GAM.traversal triGraph 1
                       , "for pure triangle traversal,"             ~: expectedTriangleTraversal ~=? GA.traversal triGraph 1
-                      , "for stateful triangle shorest path lens," ~: expectedTriangleShortestPathLens ~=? shortestPathLens triGraph GAM.bfs
-                      , "for pure triangle shortest path lens,"    ~: expectedTriangleShortestPathLens ~=? shortestPathLens triGraph GA.bfs]
+                      , "for stateful triangle shorest path lens," ~: expectedTriangleShortestPathLens ~=? GAM.shortestPathLens triGraph
+                      , "for pure triangle shortest path lens,"    ~: expectedTriangleShortestPathLens ~=? GA.shortestPathLens triGraph]
 
 -- Traversal and Shortest Path Lengths, Linear Graph
 --
@@ -93,8 +93,8 @@ expectedLinearShortestPathLens = [ (1,[(2,1),(3,2),(4,3)])
 linearTests :: Test
 linearTests = test [  "for stateful linear traversal,"          ~: expectedLinearTraversal ~=? GAM.traversal linearGraph 1
                     , "for pure linear traversal,"              ~: expectedLinearTraversal ~=? GA.traversal linearGraph 1
-                    , "for stateful linear shortest path lens," ~: expectedLinearShortestPathLens ~=? shortestPathLens linearGraph GAM.bfs
-                    , "for pure linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? shortestPathLens linearGraph GA.bfs]
+                    , "for stateful linear shortest path lens," ~: expectedLinearShortestPathLens ~=? GAM.shortestPathLens linearGraph
+                    , "for pure linear shortest path lens,"     ~: expectedLinearShortestPathLens ~=? GA.shortestPathLens linearGraph]
 
 
 -- Traversal and Shortest Path Lengths, Triangle and Rectangle (Disconnected)
@@ -133,8 +133,8 @@ triRecTests = test [  "for stateful tri+rec traversal from 1,"     ~: expectedTr
                       , "for pure tri+rec traversal from 1,"       ~: expectedTriRecTraversal1 ~=? GA.traversal triRecGraph 1
                       , "for stateful tri+rec traversal from 4,"   ~: expectedTriRecTraversal4 ~=? GAM.traversal triRecGraph 4
                       , "for pure tri+rec traversal from 4,"       ~: expectedTriRecTraversal4 ~=? GA.traversal triRecGraph 4
-                      , "for stateful tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? shortestPathLens triRecGraph GAM.bfs
-                      , "for pure tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? shortestPathLens triRecGraph GA.bfs]
+                      , "for stateful tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? GAM.shortestPathLens triRecGraph
+                      , "for pure tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? GA.shortestPathLens triRecGraph]
 
 
 -- Traversal and Shortest Path Lengths, Unbalanced Kite
@@ -173,8 +173,8 @@ expectedKiteShortestPathLens = [ (1,[(2,1),(3,1),(4,2),(5,2),(6,3),(7,4)])
 kiteTests :: Test
 kiteTests = test [  "for stateful unbalanced kite traversal,"           ~: expectedKiteTraversal ~=? GAM.traversal kiteGraph 1
                     , "for pure unbalanced kite traversal,"             ~: expectedKiteTraversal ~=? GA.traversal kiteGraph 1
-                    , "for stateful unbalanced kite shorest path lens," ~: expectedKiteShortestPathLens ~=? shortestPathLens kiteGraph GAM.bfs
-                    , "for pure unbalanced kite shortest path lens,"    ~: expectedKiteShortestPathLens ~=? shortestPathLens kiteGraph GA.bfs]
+                    , "for stateful unbalanced kite shorest path lens," ~: expectedKiteShortestPathLens ~=? GAM.shortestPathLens kiteGraph
+                    , "for pure unbalanced kite shortest path lens,"    ~: expectedKiteShortestPathLens ~=? GA.shortestPathLens kiteGraph]
 
 
 

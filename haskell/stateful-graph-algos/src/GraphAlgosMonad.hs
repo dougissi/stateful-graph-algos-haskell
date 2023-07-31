@@ -1,4 +1,4 @@
-module GraphAlgosMonad where
+module GraphAlgosMonad (traversal, shortestPathLens) where
 
 import GraphsCommon
 import Prelude as P 
@@ -79,3 +79,7 @@ bfsM g s e = do
 
 bfs :: Graph -> Node -> Node -> Int
 bfs g s e = evalState (bfsM g s e) (S.empty, [])
+
+
+shortestPathLens :: Graph -> [(Node, [(Node, Int)])]
+shortestPathLens = shortestPathLensViaBFS bfs

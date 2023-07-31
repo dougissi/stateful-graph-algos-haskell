@@ -28,7 +28,6 @@ library
       GraphAlgos
       GraphAlgosMonad
       GraphsCommon
-      Lib
   other-modules:
       Paths_stateful_graph_algos
   hs-source-dirs:

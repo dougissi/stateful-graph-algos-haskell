@@ -1,4 +1,4 @@
-module GraphAlgos where
+module GraphAlgos (traversal, shortestPathLens) where
 
 import GraphsCommon
 import Prelude as P
@@ -45,3 +45,7 @@ bfs g s e =
                         let q' = q ++ [(x, d + 1) | x <- neighbors]
                             v' = S.insert i v  -- consider current node visited
                         in aux g e v' q'
+
+
+shortestPathLens :: Graph -> [(Node, [(Node, Int)])]
+shortestPathLens = shortestPathLensViaBFS bfs
