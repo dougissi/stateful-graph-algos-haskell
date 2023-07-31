@@ -3,9 +3,10 @@ module Main (main) where
 import GraphsCommon
 import GraphAlgos as GA
 import GraphAlgosMonad as GAM
+import Text.Read (readMaybe)
 import System.IO
 
-
+type EdgeError = String
 type AlgosImplementation = String
 type TraversalFunc = Graph -> Node -> [Node]
 type ShortestPathLensFunc = Graph -> [(Node, [(Node, Int)])]
@@ -17,6 +18,26 @@ toggleImplementation curr = if curr == "monad" then
                                 ("non-monad", GA.traversal, GA.shortestPathLens)
                             else
                                 ("monad", GAM.traversal, GAM.shortestPathLens)
+
+
+makeEdge :: String -> Either EdgeError Edge
+makeEdge line = let ws = words line
+                    is = map strToInt ws
+                in case is of
+                    [Just i1, Just i2] -> Right (i1, i2)
+                    _        -> Left ("'" ++ line ++ "' cannot be converted to a pair of integers")
+    where strToInt s = readMaybe s :: Maybe Int
+
+
+parseEdgesFile :: String -> Either EdgeError [Edge]
+parseEdgesFile contents =
+    case aux (lines contents) [] of
+        Right edges -> Right edges
+        Left err    -> Left ("Edge file parsing error: " ++ err)
+    where aux [] acc     = Right (reverse acc)
+          aux (x:xs) acc = case makeEdge x of
+                              Right edge -> aux xs (edge:acc)
+                              Left err   -> Left err
 
 
 repl :: GraphAlgosState -> IO ()
@@ -35,10 +56,12 @@ repl state@(g, impl, t, spl) = do
                                      repl state
         ["graph","f",filepath] -> do file <- openFile filepath ReadMode
                                      contents <- hGetContents file
-                                     let edges = formatEdgesFile contents
-                                         g' = buildGraph edges
-                                     putStrLn $ "graph successfully built: " ++ show g'
-                                     repl (g', impl, t, spl)
+                                     case parseEdgesFile contents of
+                                        Right edges -> do let g' = buildGraph edges
+                                                          putStrLn $ "graph successfully built: " ++ show g'
+                                                          repl (g', impl, t, spl)
+                                        Left err    -> do putStrLn err
+                                                          repl state
         ("graph":edgesStrs)    -> do let edges = map (\x -> read x :: Edge) edgesStrs
                                          g' = buildGraph edges
                                      putStrLn $ "graph successfully built: " ++ show g'
