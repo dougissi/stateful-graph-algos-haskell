@@ -30,11 +30,11 @@ traversalM g = dfs
         loop [] = do (_, t) <- get  -- no remaining neighbors
                      return t
 
-        loop (i:is) = do (v, t) <- get
-                         _ <- if i `S.notMember` v 
-                                then dfs i     -- continue traversal
-                                else return t  -- do nothing
-                         loop is  -- try next neighbor
+        loop (i:is) = do (v, _) <- get
+                         if i `S.notMember` v
+                            then do _ <- dfs i  -- continue traversal
+                                    loop is
+                            else loop is        -- try next neighbor
 
 
 traversal :: Graph -> Node -> Traversal
@@ -51,7 +51,7 @@ bfsM g s e = do
                 _       -> do           -- start, end both in graph
                     (v, q) <- get
                     put (v, q ++ [(s, 0)])  -- add start to queue
-                    aux
+                    aux                     -- process queue
     where
         aux = do
             (v, q) <- get
