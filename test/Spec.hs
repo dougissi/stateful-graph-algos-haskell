@@ -131,11 +131,11 @@ expectedTriRecShortestPathLens = [(1,[(2,1),(3,1)])
 
 triRecTests :: Test
 triRecTests = test [  "for monadic tri+rec traversal from 1,"         ~: expectedTriRecTraversal1 ~=? GAM.traversal triRecGraph 1
-                      , "for non-monadic tri+rec traversal from 1,"   ~: expectedTriRecTraversal1 ~=? GA.traversal triRecGraph 1
-                      , "for monadic tri+rec traversal from 4,"       ~: expectedTriRecTraversal4 ~=? GAM.traversal triRecGraph 4
-                      , "for non-monadic tri+rec traversal from 4,"   ~: expectedTriRecTraversal4 ~=? GA.traversal triRecGraph 4
-                      , "for monadic tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? GAM.shortestPathLens triRecGraph
-                      , "for non-monadic tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? GA.shortestPathLens triRecGraph]
+                    , "for non-monadic tri+rec traversal from 1,"   ~: expectedTriRecTraversal1 ~=? GA.traversal triRecGraph 1
+                    , "for monadic tri+rec traversal from 4,"       ~: expectedTriRecTraversal4 ~=? GAM.traversal triRecGraph 4
+                    , "for non-monadic tri+rec traversal from 4,"   ~: expectedTriRecTraversal4 ~=? GA.traversal triRecGraph 4
+                    , "for monadic tri+rec shortest path lens,"     ~: expectedTriRecShortestPathLens ~=? GAM.shortestPathLens triRecGraph
+                    , "for non-monadic tri+rec shortest path lens," ~: expectedTriRecShortestPathLens ~=? GA.shortestPathLens triRecGraph]
 
 
 -- Traversal and Shortest Path Lengths, Unbalanced Kite
@@ -173,33 +173,33 @@ expectedKiteShortestPathLens = [ (1,[(2,1),(3,1),(4,2),(5,2),(6,3),(7,4)])
 
 kiteTests :: Test
 kiteTests = test [  "for monadic unbalanced kite traversal,"                ~: expectedKiteTraversal ~=? GAM.traversal kiteGraph 1
-                    , "for non-monadic unbalanced kite traversal,"          ~: expectedKiteTraversal ~=? GA.traversal kiteGraph 1
-                    , "for monadic unbalanced kite shorest path lens,"      ~: expectedKiteShortestPathLens ~=? GAM.shortestPathLens kiteGraph
-                    , "for non-monadic unbalanced kite shortest path lens," ~: expectedKiteShortestPathLens ~=? GA.shortestPathLens kiteGraph]
+                  , "for non-monadic unbalanced kite traversal,"          ~: expectedKiteTraversal ~=? GA.traversal kiteGraph 1
+                  , "for monadic unbalanced kite shorest path lens,"      ~: expectedKiteShortestPathLens ~=? GAM.shortestPathLens kiteGraph
+                  , "for non-monadic unbalanced kite shortest path lens," ~: expectedKiteShortestPathLens ~=? GA.shortestPathLens kiteGraph]
 
 
 -- Parse Edges File Contents
 goodContents :: String
-goodContents = "1 2\n2 3\n"
+goodContents = "(1,2)\n(2,3)\n"
 
 extraInt :: String
-extraInt = "1 2\n2 3 4\n"
+extraInt = "(1,2)\n(2,3,4)\n"
 
 oneLessInt :: String
-oneLessInt = "1 2\n2\n"
+oneLessInt = "(1,2)\n(2)\n"
 
 nonInt :: String
-nonInt = "1 2\n2 node3\n"
+nonInt = "(1,2)\n(2,node3)\n"
 
 twoBadLines :: String
-twoBadLines = "1 2\n2 3 4\n5 \n"
+twoBadLines = "(1, 2)\n(2, 3, 4)\n(5, )\n"
 
 parseTests :: Test
 parseTests = test [  "for edges file with good contents," ~: Right [(1,2),(2,3)] ~=? parseEdgesFile goodContents
-                   , "for edges file with extra int,"     ~: Left "Error; these lines cannot be converted to pairs of integers: '2 3 4'" ~=? parseEdgesFile extraInt
-                   , "for edges file with one less int,"  ~: Left "Error; these lines cannot be converted to pairs of integers: '2'" ~=? parseEdgesFile oneLessInt
-                   , "for edges file with non-int,"       ~: Left "Error; these lines cannot be converted to pairs of integers: '2 node3'" ~=? parseEdgesFile nonInt
-                   , "for edges file with 2 bad lines,"   ~: Left "Error; these lines cannot be converted to pairs of integers: '2 3 4', '5 '" ~=? parseEdgesFile twoBadLines]
+                   , "for edges file with extra int,"     ~: Left "Error; these strings cannot be converted to (Int,Int): '(2,3,4)'" ~=? parseEdgesFile extraInt
+                   , "for edges file with one less int,"  ~: Left "Error; these strings cannot be converted to (Int,Int): '(2)'" ~=? parseEdgesFile oneLessInt
+                   , "for edges file with non-int,"       ~: Left "Error; these strings cannot be converted to (Int,Int): '(2,node3)'" ~=? parseEdgesFile nonInt
+                   , "for edges file with 2 bad lines,"   ~: Left "Error; these strings cannot be converted to (Int,Int): '(2, 3, 4)', '(5, )'" ~=? parseEdgesFile twoBadLines]
 
 
 

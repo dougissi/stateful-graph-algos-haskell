@@ -15,13 +15,17 @@ type StateBFS = (VisitedNodes, Queue)
 
 
 traversalM :: Graph -> Node -> State TraversalState Traversal
-traversalM g root = do dfs root
+traversalM g = dfs
     where
-        dfs r = do (v, t) <- get
-                   case M.lookup r g of
-                       Nothing        -> return t
-                       Just neighbors -> do put (S.insert r v, t ++ [r])  -- consider root to be visited
-                                            loop neighbors
+        dfs root = do
+            (v, t) <- get
+            case M.lookup root g of
+                Nothing        -> return t
+                Just neighbors -> do
+                    let v' = S.insert root v  -- mark root as visited
+                        t' = t ++ [root]  -- add root to traversal
+                    put (v', t')
+                    loop neighbors  -- do dfs on nonvisited neighbors
 
         loop [] = do (_, t) <- get
                      return t

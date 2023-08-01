@@ -19,6 +19,16 @@ toggleImplementation curr = if curr == "monad" then
                                 ("monad", GAM.traversal, GAM.shortestPathLens)
 
 
+handleEdgesParse :: GraphAlgosState -> Either EdgesParseError [Edge] -> IO ()
+handleEdgesParse state@(_, impl, t, spl) edgesParse = do 
+    case edgesParse of
+        Right edges -> do let g' = buildGraph edges
+                          putStrLn $ viewGraph g'
+                          repl (g', impl, t, spl)
+        Left err    -> do putStrLn err
+                          repl state
+
+
 repl :: GraphAlgosState -> IO ()
 repl state@(g, impl, t, spl) = do
     putStr "> "
@@ -35,16 +45,8 @@ repl state@(g, impl, t, spl) = do
                                      repl state
         ["graph","f",filepath] -> do file <- openFile filepath ReadMode
                                      contents <- hGetContents file
-                                     case parseEdgesFile contents of
-                                        Right edges -> do let g' = buildGraph edges
-                                                          putStrLn $ viewGraph g'
-                                                          repl (g', impl, t, spl)
-                                        Left err    -> do putStrLn err
-                                                          repl state
-        ("graph":edgesStrs)    -> do let edges = map (\x -> read x :: Edge) edgesStrs
-                                         g' = buildGraph edges
-                                     putStrLn $ viewGraph g'
-                                     repl (g', impl, t, spl)
+                                     handleEdgesParse state (parseEdgesFile contents)
+        ("graph":edgesStrs)    -> handleEdgesParse state (parseEdgesStrs edgesStrs)
         ["traversal",srcStr]   -> do print (t g (read srcStr :: Int))
                                      repl state
         ["shortestPathLens"]   -> do print (spl g)
