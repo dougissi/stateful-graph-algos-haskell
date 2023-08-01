@@ -1,6 +1,7 @@
 # stateful-graph-algos-haskell
+Created as a final project for UIUC CS421 (under Prof. Mattox Beckman, Summer '23) by Douglas Issichopoulos
 
-## Overview 
+## Overview
 A Haskell application with the following features:
 * A `Graph` data type that allows for cycles (i.e., not just for trees).
 * A `traversal` function that returns an in-order traversal of a graph via depth-first search. 
@@ -85,4 +86,4 @@ Required packages:
 Setup:
 * navigate to the python subdirectory (e.g., `cd python`)
 * recommended to install the packages above in a virtual environment and then activate it
-* run code using `python3 graph_algorithms_networkx.py --edges ../graphs/edges/triangle.txt` where you can replace `../graphs/edges/triangle.txt` with any file in [./graphs/edges](./graphs/edges), or create your own.
+* run code using `python3 graph_algorithms_networkx.py --edges ../graphs/edges/triangle.txt` where you can replace `../graphs/edges/triangle.txt` with any file in [./graphs/edges](./graphs/edges) or create your own.
