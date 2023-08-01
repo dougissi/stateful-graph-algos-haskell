@@ -1,6 +1,12 @@
 # stateful-graph-algos-haskell
 Created as a final project for UIUC CS421 (under Prof. Mattox Beckman, Summer '23) by Douglas Issichopoulos
 
+Inspired by:
+
+[Structuring Depth First Search Algorithms in Haskell](https://citeseerx.ist.psu.edu/doc/10.1.1.52.6526)<br>
+David King and John Launchbury. Proc. ACM Principles of Programming Languages, San 
+Francisco, 1995.
+
 ## Overview
 A Haskell application with the following features:
 * A `Graph` data type that allows for cycles (i.e., not just for trees).
