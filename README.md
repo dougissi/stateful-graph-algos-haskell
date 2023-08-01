@@ -32,7 +32,9 @@ Code Structure:
 * run all unit tests via `stack test`
 * enter REPL via `stack run`
 
-## REPL - a command line interface
+## REPL
+A command line interface.
+
 Commands:
 * "exit" -> quit REPL
 * "switch" -> switch between monadic and non-monadic implementations (default is monadic)
