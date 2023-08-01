@@ -7,8 +7,7 @@ def buildGraph(edges_file: str) -> nx.Graph:
     edges = []
     with open(edges_file) as f:
         for line in f:
-            nodes = line.strip().split(' ')
-            edge = (int(nodes[0]), int(nodes[1]))
+            edge = eval(line.strip())
             edges.append(edge)
 
     G = nx.Graph()

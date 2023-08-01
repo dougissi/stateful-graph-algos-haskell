@@ -56,14 +56,14 @@ repl state@(g, impl, t, spl) = do
 
 
 main :: IO ()
-main = do putStrLn "Welcome to the Stateful Graph Algos REPL!\n"
-          putStrLn "Commands (don't include '* '): "
+main = do putStrLn "Welcome to the Stateful Graph Algos in Haskell REPL!\n"
+          putStrLn "Commands:"
           putStrLn "* exit -> quit REPL"
           putStrLn "* switch -> switch between monadic and non-monadic implementations (default is monadic)"
           putStrLn "* graph `edges` -> build graph from `edges` which is of the form '(1,2) (2,3) ...'"
           putStrLn "* graph f `filepath` -> build graph from file at `filepath`"
-          putStrLn "* viewGraph -> print out the current graph" 
-          putStrLn "* traversal `src` -> print in-order traversal from `src` node"
-          putStrLn "* shortestPathLens -> print out the shortest paths between all nodes (except those where no path exists)"
+          putStrLn "* viewGraph -> print current graph"
+          putStrLn "* traversal `src` -> print in-order traversal of current graph from `src` node"
+          putStrLn "* shortestPathLens -> print shortest paths between all nodes of current graph (except those where no path exists)"
           repl (emptyGraph, "monad", GAM.traversal, GAM.shortestPathLens)
     

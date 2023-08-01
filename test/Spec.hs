@@ -109,7 +109,7 @@ linearTests = test [  "for monadic linear traversal,"              ~: expectedLi
 -- Logic:
 -- * Traversal from node 1 should not include any nodes in the square
 -- * Traversal from node 4 should not include any nodes in the triangle
--- * There should be no shortest paths between the nodes in the triangle and the nodes in the square, and vice versa.
+-- * There should be no shortest paths between the nodes in the triangle and the nodes in the square.
 
 triRecGraph :: Graph
 triRecGraph = buildGraph[(1,2), (1,3), (2,3), (4,5), (5,6), (6,7), (7,4)]
@@ -154,7 +154,7 @@ triRecTests = test [  "for monadic tri+rec traversal from 1,"         ~: expecte
 --
 -- Logic:
 -- * Shortest path from node 1 to node 7 should be through node 2, not node 3
--- * Traversal from node 1 should be via depth first search (recursion ordering based on order of edges/nodes fed to `buildGraph`)
+-- * Traversal from node 1 should be via depth first search (recursion ordering based on order of edges in graph construction)
 
 kiteGraph :: Graph
 kiteGraph = buildGraph [(1,2), (1,3), (3,4), (4,5), (2,5), (5,6), (6,7)]
