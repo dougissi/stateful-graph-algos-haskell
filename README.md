@@ -14,7 +14,7 @@ Code Structure:
   * [Main.hs](./app/Main.hs) &mdash; REPL
 * graphs/ 
   * [edges/](./graphs/edges) &mdash; saved example graph edge text files
-  * [imgs/](./graphs/imgs) &mdash; saved example graph images (created from python)
+  * [imgs/](./graphs/imgs) &mdash; saved example graph images (created from Python submodule)
 * python/ 
   * [graph_algos_networkx.py](./python/graph_algorithms_networkx.py) &mdash; Python submodule using `networkx` to check test cases and visualize graphs
 * src/
