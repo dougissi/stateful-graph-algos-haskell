@@ -9,6 +9,22 @@ A Haskell application with the following features:
 * A Python submodule using the `networkx` library to make expected outputs for unit tests for my Haskell implementations.
 * A REPL of my Haskell application to allow the user build graphs and run the algorithms.
 
+Code Structure:
+* app/
+  * [Main.hs](./app/Main.hs) &mdash; REPL
+* graphs/ 
+  * [edges/](./graphs/edges) &mdash; saved example graph edge text files
+  * [imgs/](./graphs/imgs) &mdash; saved example graph images (created from python)
+* python/ 
+  * [graph_algos_networkx.py](./python/graph_algorithms_networkx.py) &mdash; Python submodule using `networkx` to check test cases and visualize graphs
+* src/
+  * [GraphAlgos.hs](./src/GraphAlgos.hs) &mdash; non-monadic implementations of graph algos
+  * [GraphAlgosMonad.hs](./src/GraphAlgosMonad.hs) &mdash; monadic implementations of graph algos
+  * [GraphsCommon.hs](./src/GraphsCommon.hs) &mdash; graph construction and common functions
+  * [Parse.hs](./src/Parse.hs) &mdash; parsing graph edges entered into REPL
+* test/
+  * [Spec.hs](./test/Spec.hs) &mdash; HUnit unit tests
+
 ## How to Run
 * download the code (e.g., `git clone https://github.com/dougissi/stateful-graph-algos-haskell.git`)
 * navigate to the project directory (e.g., `cd stateful-graph-algos-haskell`)
