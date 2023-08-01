@@ -10,7 +10,7 @@ type VisitedNodes = S.Set Node
 type Traversal = [Node]
 type TraversalState = (VisitedNodes, Traversal)
 type Depth = Int
-type Queue = [(Int, Depth)]
+type Queue = [(Node, Depth)]
 type StateBFS = (VisitedNodes, Queue)
 
 
@@ -27,14 +27,14 @@ traversalM g = dfs
                     put (v', t')
                     loop neighbors  -- do dfs on nonvisited neighbors
 
-        loop [] = do (_, t) <- get
+        loop [] = do (_, t) <- get  -- no remaining neighbors
                      return t
 
         loop (i:is) = do (v, t) <- get
                          _ <- if i `S.notMember` v 
                                 then dfs i     -- continue traversal
                                 else return t  -- do nothing
-                         loop is
+                         loop is  -- try next neighbor
 
 
 traversal :: Graph -> Node -> Traversal
@@ -48,29 +48,30 @@ bfsM g s e = do
         Just _  ->
             case M.lookup e g of
                 Nothing -> return (-1)  -- end not in graph
-                _       -> do           -- start and end both in graph
+                _       -> do           -- start, end both in graph
                     (v, q) <- get
-                    put (v, q ++ [(s, 0)])
+                    put (v, q ++ [(s, 0)])  -- add start to queue
                     aux
     where
         aux = do
             (v, q) <- get
             case q of
-                []           -> return (-1)  -- queue empty; fail
-                ((i, d): q') -> do
-                    if i == e                -- at end; return depth
+                []           -> return (-1)   -- queue empty; fail
+                ((i, d): q') -> do            -- "pop" next node
+                    if i == e                 -- win; return depth
                         then return d    
-                    else if i `S.member` v   -- already visited: don't add to queue
+                    else if i `S.member` v    -- already visited; skip
                         then do put (v, q')
                                 aux
-                    else do                  -- haven't visited: append to queue
-                        case M.lookup i g of
-                            Nothing        -> do put (v, q')  -- next node in queue not in graph; skip
-                                                 aux
-                            Just neighbors -> do let q'' = q' ++ [(x, d + 1) | x <- neighbors ]
-                                                     v' = S.insert i v
-                                                 put (v', q'')
-                                                 aux
+                    else do
+                        case M.lookup i g of  -- get node's neighbors
+                            Nothing   -> do put (v, q')  -- none; skip
+                                            aux
+                            Just nbrs -> do   -- add neighbors to queue
+                                let q'' = q' ++ [(x, d + 1) | x <- nbrs]
+                                    v' = S.insert i v
+                                put (v', q'')
+                                aux
 
 
 bfs :: Graph -> Node -> Node -> Int
